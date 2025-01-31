@@ -1,1 +1,71 @@
-console.log('Hello, world!');
+import { readFileSync } from 'fs';
+import minimist from 'minimist';
+import { parse } from 'node-html-parser';
+
+const argv = minimist(process.argv.slice(2));
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const [referenceFile, dataFile] = argv._;
+
+if (!referenceFile) { //  || !dataFile) {
+  console.error('Missing arguments. Usage: <dbString> <inputFile>');
+  process.exit(1);
+}
+
+(async () => {
+  try {
+
+
+    const file = process.argv[2];
+    const html = readFileSync(file, 'utf8');
+
+    const root = parse(html);
+
+    const headers = root.querySelector('thead tr')?.childNodes.filter((node) => node.rawTagName === 'th');
+
+
+
+    const rows = root.querySelector('tbody')?.childNodes.filter((node) => node.rawTagName === 'tr');
+
+    // const cells = rows[0].childNodes.filter((node) => node.rawTagName === 'td');
+
+    // console.log(cells);
+
+    console.log(headers?.map(header => header.text));
+
+
+    const parsedData = rows.map(row => {
+      const cells = row.childNodes.filter((node) => node.rawTagName === 'td');
+      return cells.reduce((acc, cell, index) => {
+        const header = headers[index].text;
+        
+        // strip whitespace, newlines, \n, slashes, etc.
+        const cleanHeader = header.replace(/\B\s+|\s+\B/g, '').replace(/ /g, "_").replace("#", "").replace(/\//g, '_').toLowerCase();
+  
+        // stripe newlines
+        const cleanCell = cell.text.replace(/\B\s+|\s+\B/g, '');
+  
+        acc[cleanHeader] = cleanCell;
+        return acc;
+      }, {} as Record<string, string>);
+    });
+    // const data = cells.reduce((acc, cell, index) => {
+    //   const header = headers[index].text;
+      
+    //   // strip whitespace, newlines, \n, slashes, etc.
+    //   const cleanHeader = header.replace(/\B\s+|\s+\B/g, '').replace(/ /g, "_").replace("#", "").replace(/\//g, '_').toLowerCase();
+
+    //   // stripe newlines
+    //   const cleanCell = cell.text.replace(/\B\s+|\s+\B/g, '');
+
+    //   acc[cleanHeader] = cleanCell;
+    //   return acc;
+    // }, {} as Record<string, string>);
+
+    console.log(parsedData);
+
+    // console.log(rows?.map(row => row.toString()));
+
+  } catch (error) {
+    console.error(`Error importing partner data: ${error}`);
+  }
+})();
