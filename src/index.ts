@@ -7,7 +7,9 @@ const argv = minimist(process.argv.slice(2));
 const [referenceFile, dataFile] = argv._;
 
 if (!referenceFile) { //  || !dataFile) {
-  console.error('Missing arguments. Usage: <dbString> <inputFile>');
+  console.error('Missing arguments. Usage: <referenceFile> <dataFile>');
+  console.error('Example: npm run start -- src/reference.html src/data.html');
+  console.error('NOTE: referenceFile is expected to be an HTML file with a table of headers and data');
   process.exit(1);
 }
 
