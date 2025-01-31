@@ -86,7 +86,7 @@ export default [{
         "no-ex-assign": "off",
         "no-else-return": "error",
         "no-shadow": "off",
-        "no-console": "error",
+        // "no-console": "error",
         "prefer-destructuring": "error",
         "prefer-const": "error",
         "object-shorthand": "error",
@@ -95,6 +95,7 @@ export default [{
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-var-requires": "off",
         "@typescript-eslint/no-empty-function": "off",
+        "indent": ["error", 2],
 
         "@typescript-eslint/no-unused-vars": ["error", {
             args: "none",
