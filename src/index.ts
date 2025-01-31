@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync } from 'fs';
 import minimist from 'minimist';
 import { parse } from 'node-html-parser';
 
@@ -42,9 +42,13 @@ if (!referenceFile) { //  || !dataFile) {
 
     console.log(parsedData);
 
+    writeFileSync(`data/parsed/${fileName}.json`, JSON.stringify(parsedData, null, 2));
+
+
+    console.log(referenceFile, dataFile);
     // console.log(rows?.map(row => row.toString()));
 
   } catch (error) {
-    console.error(`Error importing partner data: ${error}`);
+    console.error(`Error importing gene data: ${error}`);
   }
 })();
