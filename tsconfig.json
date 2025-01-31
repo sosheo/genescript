@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "outDir": "./dist",
+    "lib": ["es2020", "dom"],
+    "module": "node16",
+    "target": "es2020",
+    "traceResolution": false,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node16",
+    "baseUrl": "./",
+    "resolveJsonModule": true,
+    "noUnusedLocals": false,
+    "paths": {
+      "#*": ["./src/*"],
+      "#types/*": ["./src/types/*"]
+    },
+    "typeRoots": ["./src/types", "./node_modules/@types", "./**/*.d.ts"],
+    "sourceMap": true,
+    "sourceRoot": "./src"
+  },
+  "include": ["src/types/*.d.ts", "./src/**/*", "./**/*.d.ts"],
+  "exclude": ["node_modules"]
+}
