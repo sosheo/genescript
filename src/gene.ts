@@ -1,52 +1,67 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync } from 'fs';
+import { parse } from 'csv-parse/sync';
 import minimist from 'minimist';
-import { parse } from 'node-html-parser';
+// import { parse } from 'node-html-parser';
 
 const argv = minimist(process.argv.slice(2));
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const [referenceFile, dataFile] = argv._;
 
 if (!referenceFile) { //  || !dataFile) {
-  console.error('Missing arguments. Usage: <referenceFile> <dataFile>');
-  console.error('Example: npm run parse -- src/reference.html src/data.html');
+  console.error('Missing arguments. Usage: <geneFile> <dataFile>');
+  console.error('Example: npm run gene -- data/parsed/psen1.json parsed/dnadata.csv');
   console.error('NOTE: referenceFile is expected to be an HTML file with a table of headers and data');
   process.exit(1);
 }
 
+type GeneData = {
+  accession: string;
+  rsid: string;
+  clinical_significance_and_condition: string;
+  chrpos: string;
+  variation_name: string;
+  ref_alt: string;
+  aa_chg: string;
+  type: string;
+  cit: string;
+}
+
+// type DnaData = array of string[];
+// example dnd data = 
+// [
+//   ['rs123', '1', '123', 'A', 'T'],
+//   ['rs456', '2', '456', 'C', 'G'],
+// ]
+type DnaRow = string[];
+
+
 (async () => {
   try {
-    const html = readFileSync(referenceFile, 'utf8');
-    const fileName = referenceFile.split('/').pop()?.replace('.html', '');
-    const root = parse(html);
+    // Read the content
+    const dnaFile = readFileSync(dataFile);
 
-    const headers = root.querySelector('thead tr')?.childNodes.filter((node) => node.rawTagName === 'th');
-    if (!headers) throw new Error('Could not find headers');
+    // Parse the CSV content
+    const dna = parse(dnaFile, {bom: true, delimiter: '\t'}) as DnaRow[];
 
-    const rows = root.querySelector('tbody')?.childNodes.filter((node) => node.rawTagName === 'tr');
-    if (!rows) throw new Error('Could not find rows');
+    const geneFile = readFileSync(referenceFile, 'utf8');
+    const geneData = JSON.parse(geneFile) as GeneData[];
 
-    const parsedData = rows.map(row => {
-      const cells = row.childNodes.filter((node) => node.rawTagName === 'td');
-      return cells.reduce((acc, cell, index) => {
-        const header = headers[index].text;
-        
-        const cleanHeader = header.replace(/\B\s+|\s+\B/g, '').replace(/ /g, "_").replace("#", "").replace(/\//g, '_').toLowerCase();
-        const cleanCell = cell.text.replace(/\B\s+|\s+\B/g, '');
-  
-        acc[cleanHeader] = cleanCell;
-        return acc;
-      }, {} as Record<string, string>);
-    });
+    // console.log(geneData);
 
+    const rsids = geneData.map(gene => gene.rsid);
 
+    const found = dna.reduce((acc, row) => {
+      const [rsid] = row;
+      const isRsidMatch = rsids.includes(rsid);
+      const joinedAllele = row[3] + '/' + row[4];
+      const isAlleleMatch = isRsidMatch ? geneData.filter(gene => gene.rsid === rsid && gene.ref_alt === joinedAllele).length > 0 : false;
 
-    console.log(parsedData);
+      return isRsidMatch && isAlleleMatch ? [...acc, row] : acc;
+    }, [] as DnaRow[]);
 
-    writeFileSync(`data/parsed/${fileName}.json`, JSON.stringify(parsedData, null, 2));
+    // console.log(dna);
 
-
-    console.log(referenceFile, dataFile);
-    // console.log(rows?.map(row => row.toString()));
+    console.log(found);
 
   } catch (error) {
     console.error(`Error importing gene data: ${error}`);
