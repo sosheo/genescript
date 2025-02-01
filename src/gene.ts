@@ -10,7 +10,8 @@ const [referenceFile, dataFile] = argv._;
 if (!referenceFile) { //  || !dataFile) {
   console.error('Missing arguments. Usage: <geneFile> <dataFile>');
   console.error('Example: npm run gene -- data/parsed/psen1.json parsed/dnadata.csv');
-  console.error('NOTE: referenceFile is expected to be an HTML file with a table of headers and data');
+  console.error('NOTE: geneFile is expected to be a JSON file with an array of gene data parsed from an HTML file');
+  console.error('NOTE: dataFile is expected to be a tab delimited CSV file with DNA data');
   process.exit(1);
 }
 
