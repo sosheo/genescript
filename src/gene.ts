@@ -47,7 +47,6 @@ type DnaRow = string[];
     const geneData = JSON.parse(geneFile) as GeneData[];
 
     // console.log(geneData);
-
     const rsids = geneData.map(gene => gene.rsid);
 
     const found = dna.reduce((acc, row) => {
@@ -60,7 +59,6 @@ type DnaRow = string[];
     }, [] as DnaRow[]);
 
     // console.log(dna);
-
     console.log(found);
 
   } catch (error) {
