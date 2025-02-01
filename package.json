@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gene": "node --experimental-transform-types src/index.ts"
+    "gene": "node --experimental-transform-types src/index.ts",
+    "parse": "node --experimental-transform-types src/parse.ts"
   },
   "type": "module",
   "author": "",
